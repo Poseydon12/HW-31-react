@@ -12165,18 +12165,20 @@ var require_createWebStorage = /* @__PURE__ */ __commonJSMin(((exports) => {
 		};
 	}
 }));
-(/* @__PURE__ */ __commonJSMin(((exports) => {
-	exports.__esModule = true;
-	exports.default = void 0;
-	var _createWebStorage = _interopRequireDefault(require_createWebStorage());
-	function _interopRequireDefault(obj) {
-		return obj && obj.__esModule ? obj : { default: obj };
-	}
-	exports.default = (0, _createWebStorage.default)("local");
-})))();
 var store = configureStore({
 	reducer: {
-		contacts: persistReducer({ key: "contacts" }, contactsSlice_default),
+		contacts: persistReducer({
+			key: "contacts",
+			storage: (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((exports) => {
+				exports.__esModule = true;
+				exports.default = void 0;
+				var _createWebStorage = _interopRequireDefault(require_createWebStorage());
+				function _interopRequireDefault(obj) {
+					return obj && obj.__esModule ? obj : { default: obj };
+				}
+				exports.default = (0, _createWebStorage.default)("local");
+			})))(), 1)).default
+		}, contactsSlice_default),
 		filter: filterSlice_default
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: { ignoredActions: [
