@@ -12096,11 +12096,93 @@ function persistStore(store, options, cb) {
 	if (!(options && options.manualPersist)) persistor.persist();
 	return persistor;
 }
+//#endregion
+//#region node_modules/redux-persist/lib/storage/getStorage.js
+var require_getStorage = /* @__PURE__ */ __commonJSMin(((exports) => {
+	exports.__esModule = true;
+	exports.default = getStorage;
+	function _typeof(obj) {
+		if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") _typeof = function _typeof(obj) {
+			return typeof obj;
+		};
+		else _typeof = function _typeof(obj) {
+			return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+		};
+		return _typeof(obj);
+	}
+	function noop() {}
+	var noopStorage = {
+		getItem: noop,
+		setItem: noop,
+		removeItem: noop
+	};
+	function hasStorage(storageType) {
+		if ((typeof self === "undefined" ? "undefined" : _typeof(self)) !== "object" || !(storageType in self)) return false;
+		try {
+			var storage = self[storageType];
+			var testKey = "redux-persist ".concat(storageType, " test");
+			storage.setItem(testKey, "test");
+			storage.getItem(testKey);
+			storage.removeItem(testKey);
+		} catch (e) {
+			return false;
+		}
+		return true;
+	}
+	function getStorage(type) {
+		var storageType = "".concat(type, "Storage");
+		if (hasStorage(storageType)) return self[storageType];
+		else return noopStorage;
+	}
+}));
+//#endregion
+//#region src/Redux/store.js
+var import_createWebStorage = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((exports) => {
+	exports.__esModule = true;
+	exports.default = createWebStorage;
+	var _getStorage = _interopRequireDefault(require_getStorage());
+	function _interopRequireDefault(obj) {
+		return obj && obj.__esModule ? obj : { default: obj };
+	}
+	function createWebStorage(type) {
+		var storage = (0, _getStorage.default)(type);
+		return {
+			getItem: function getItem(key) {
+				return new Promise(function(resolve, reject) {
+					resolve(storage.getItem(key));
+				});
+			},
+			setItem: function setItem(key, item) {
+				return new Promise(function(resolve, reject) {
+					resolve(storage.setItem(key, item));
+				});
+			},
+			removeItem: function removeItem(key) {
+				return new Promise(function(resolve, reject) {
+					resolve(storage.removeItem(key));
+				});
+			}
+		};
+	}
+})))(), 1);
+var createNoopStorage = () => {
+	return {
+		getItem(_key) {
+			return Promise.resolve(null);
+		},
+		setItem(_key, value) {
+			return Promise.resolve(value);
+		},
+		removeItem(_key) {
+			return Promise.resolve();
+		}
+	};
+};
 var store = configureStore({
 	reducer: {
 		contacts: persistReducer({
 			key: "contacts",
-			storage: typeof window !== "undefined" ? window.localStorage : null
+			storage: typeof window !== "undefined" ? (0, import_createWebStorage.default)("local") : createNoopStorage()
 		}, contactsSlice_default),
 		filter: filterSlice_default
 	},
